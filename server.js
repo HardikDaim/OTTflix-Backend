@@ -1,13 +1,14 @@
-const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
-const typeDefs = require('./graphql/schema');
-const db = require('./config/db');
-const resolvers = require('./graphql/resolvers');
+const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
+const cors = require("cors");
+const typeDefs = require("./graphql/schemas/videoSchema");
+const db = require("./config/db");
+const resolvers = require("./graphql/resolvers/videoResolver");
+const videoRoutes = require("./routes/videoRoutes");
+const userRoutes = require("./routes/userRoutes");
+require("dotenv").config({});
 const app = express();
 
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
-});
 
 
 async function startServer() {
@@ -16,20 +17,23 @@ async function startServer() {
     resolvers,
   });
 
-  db();
+  db(); // Connect to MongoDB
+
   // Wait for the server to start
   await server.start();
-
+  app.use(cors());
   // Apply middleware after the server has started
   server.applyMiddleware({ app });
 
   const PORT = process.env.PORT;
 
-  // Set up your server to listen on a specific port
- app.listen(PORT, () => {
+  app.use("/api/videos", require("./routes/videoRoutes"));
+  app.use("/api/users", require("./routes/userRoutes"));
+
+  // Set up the server to listen on a specific port
+  app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/graphql`);
   });
-
 }
 
 // Start the server
