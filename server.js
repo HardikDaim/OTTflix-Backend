@@ -4,12 +4,9 @@ const cors = require("cors");
 const typeDefs = require("./graphql/schemas/videoSchema");
 const db = require("./config/db");
 const resolvers = require("./graphql/resolvers/videoResolver");
-const videoRoutes = require("./routes/videoRoutes");
-const userRoutes = require("./routes/userRoutes");
+
 require("dotenv").config({});
 const app = express();
-
-
 
 async function startServer() {
   const server = new ApolloServer({
@@ -21,11 +18,34 @@ async function startServer() {
 
   // Wait for the server to start
   await server.start();
-  app.use(cors());
+
+  const allowedOrigins =
+    process.env.NODE_ENV === "production"
+      ? [process.env.PRODUCTION_URL] // Production URL of frontend
+      : [process.env.LOCAL_URL];
+
+  const corsOptions = {
+    oorigin: function (origin, callback) {
+      // If no origin (for Postman or mobile apps), allow the request
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow request
+      } else {
+        console.log(`Blocked by CORS: ${origin}`); // Log the blocked origin
+        callback(new Error("Not allowed by CORS")); // Reject request
+      }
+    },
+  };
+
+  // Middleware
+  app.use(cors(corsOptions));
   // Apply middleware after the server has started
   server.applyMiddleware({ app });
 
   const PORT = process.env.PORT;
+
+  app.get("/", (req, res) => {
+    res.json({ message: "Server is Running" });
+  });
 
   app.use("/api/videos", require("./routes/videoRoutes"));
   app.use("/api/users", require("./routes/userRoutes"));
