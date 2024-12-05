@@ -12,6 +12,7 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    cache: "bounded",
   });
 
   db(); // Connect to MongoDB
