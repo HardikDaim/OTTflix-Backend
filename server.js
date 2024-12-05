@@ -26,7 +26,8 @@ async function startServer() {
       : [process.env.LOCAL_URL];
 
   const corsOptions = {
-    oorigin: function (origin, callback) {
+    origin: function (origin, callback) {
+      console.log("Origin received:", origin);
       // If no origin (for Postman or mobile apps), allow the request
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true); // Allow request
