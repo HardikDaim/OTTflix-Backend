@@ -20,26 +20,22 @@ async function startServer() {
   // Wait for the server to start
   await server.start();
 
+  const allowedOrigins =
+    process.env.NODE_ENV === "production"
+      ? [process.env.PRODUCTION_URL] // Production URL of frontend
+      : [process.env.LOCAL_URL];
+
   const corsOptions = {
     origin: function (origin, callback) {
-      console.log("Origin received:", origin);
-
-      if (process.env.NODE_ENV === "production") {
-        // Allow all origins in production
-        callback(null, true);
+      // If no origin (for Postman or mobile apps), allow the request
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow request
       } else {
-        // Restrict origins in development
-        const allowedOrigins = [process.env.LOCAL_URL];
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true); // Allow request
-        } else {
-          console.log(`Blocked by CORS: ${origin}`); // Log the blocked origin
-          callback(new Error("Not allowed by CORS")); // Reject request
-        }
+        console.log(`Blocked by CORS: ${origin}`); // Log the blocked origin
+        callback(new Error("Not allowed by CORS")); // Reject request
       }
     },
   };
-
 
   // Middleware
   app.use(cors(corsOptions));
