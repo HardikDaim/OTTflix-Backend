@@ -28,19 +28,9 @@ const typeDefs = gql`
   # Define Queries for different sections
   type Query {
     getFeaturedVideo: [Video]  # Fetch all featured videos
-    getContinueWatching: [Video]  # Fetch all continue-watching videos
     getMovies: [Video]  # Fetch all movies
-    getMovieById(id: ID!): Video  # Fetch a specific movie by its ID
-    getMoviesByGenre(genre: String!): [Video]  # Fetch movies by genre
-    getMoviesByLanguage(language: String!): [Video]  # Fetch movies by language
-    getMoviesByDirector(director: String!): [Video]  # Fetch movies by director
-    getMoviesByReleaseYear(year: String!): [Video]  # Fetch movies by release year
-    getMoviesByDuration(minDuration: Int!, maxDuration: Int!): [Video]  # Fetch movies by duration range
-    getMoviesByRating(rating: String!): [Video]  # Fetch movies by rating
-    getMoviesByAward(award: String!): [Video]  # Fetch movies that have won a specific award
-    getMoviesByTag(tag: String!): [Video]  # Fetch movies by a specific tag
-    getRecentlyAddedMovies(limit: Int!): [Video]  # Fetch recently added movies
     searchMovies(query: String!): [Video]  # Fetch movies based on a search query (title, genre, etc.)
+    recommendedMovies: [Video]
   }
 `;
 
